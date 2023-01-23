@@ -37,3 +37,8 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+
+# files not publically available (ethics, condfidentiality etc)
+dat/*\.csv
+r/0*\.R
