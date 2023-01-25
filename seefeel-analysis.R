@@ -46,6 +46,8 @@ col_lohi <-
   )
 
 
+# ---- funcs ----
+
 # function that replaces repeated values in a vector with empty strings
 # as the verbose redundancy is too busy in some cases 
 rm_rpts <- function(x) {
@@ -59,6 +61,69 @@ rm_rpts <- function(x) {
   x[rm_ii] <- ""
   return(x)
 }
+
+
+
+# effect size (f^2), R^2 and residual variance functions
+
+get_res_var_lmer <- function(lmer_obj) {
+  return(sigma(lmer_obj) ^ 2)
+}
+
+get_lmer_r2 <- function(lmer_obj) {
+  
+  # residual variance of input model
+  v_mod <- get_res_var_lmer(lmer_obj)
+  
+  # get formula for null model (intercept and REs only)
+  null_form <- formula(lmer_obj, random.only = TRUE)
+  # create null model
+  lmer_obj_null <- update(lmer_obj, null_form)
+  
+  # res var of null mod
+  v_null <- get_res_var_lmer(lmer_obj_null)
+  
+  r2 <- (v_null - v_mod) / v_null
+  
+  attr(r2, "v_null") <- v_null
+  attr(r2, "v_mod") <- v_mod
+  
+  return(r2)
+  
+}
+
+rm_terms_lmer <- function(lmer_obj, terms) {
+  
+  update_form <- as.formula(paste0("~ . -", paste(terms, collapse = " - ")))
+  # print(update_form)
+
+  lmer_obj_less_term <- update(lmer_obj, update_form)
+  
+  return(lmer_obj_less_term)
+}
+
+
+eff_size_f2 <- function(lmer_obj, term) {
+  
+  r2_full <- get_lmer_r2(lmer_obj)[1]
+  r2_less_tem <- get_lmer_r2(rm_terms_lmer(lmer_obj, term))[1]
+  
+  f2 <- (r2_full - r2_less_tem) / (1 - r2_full)
+  
+  return(f2)
+  
+}
+
+# terms(formula(m1_final, fixed.only))
+# summary(m1_final)
+# summary(rm_terms_lmer(m1_final, "cond"))
+# summary(rm_terms_lmer(m1_final, c("int_sens", "int_sens:block")))
+# get_lmer_r2(m1_final)
+# get_lmer_r2(rm_terms_lmer(m1_final, "cond"))
+# get_lmer_r2(rm_terms_lmer(m1_final, c("int_sens", "int_sens:block")))
+# 
+# eff_size_f2(m1_final, "cond")
+
 
 
 # ---- read -----
@@ -264,6 +329,7 @@ m1_final <-
     REML = TRUE
   )
 summary(m1_final)
+
 
 # term significance
 car::Anova(m1_final, type = "III")
