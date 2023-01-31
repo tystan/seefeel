@@ -95,7 +95,7 @@ get_lmer_r2 <- function(lmer_obj) {
 rm_terms_lmer <- function(lmer_obj, terms) {
   
   update_form <- as.formula(paste0("~ . -", paste(terms, collapse = " - ")))
-  # print(update_form)
+  print(update_form)
 
   lmer_obj_less_term <- update(lmer_obj, update_form)
   
@@ -103,26 +103,16 @@ rm_terms_lmer <- function(lmer_obj, terms) {
 }
 
 
-eff_size_f2 <- function(lmer_obj, term) {
+eff_size_f2 <- function(lmer_obj, terms) {
   
   r2_full <- get_lmer_r2(lmer_obj)[1]
-  r2_less_tem <- get_lmer_r2(rm_terms_lmer(lmer_obj, term))[1]
+  r2_less_term <- get_lmer_r2(rm_terms_lmer(lmer_obj, terms))[1]
   
-  f2 <- (r2_full - r2_less_tem) / (1 - r2_full)
+  f2 <- (r2_full - r2_less_term) / (1 - r2_full)
   
   return(f2)
   
 }
-
-# terms(formula(m1_final, fixed.only))
-# summary(m1_final)
-# summary(rm_terms_lmer(m1_final, "cond"))
-# summary(rm_terms_lmer(m1_final, c("int_sens", "int_sens:block")))
-# get_lmer_r2(m1_final)
-# get_lmer_r2(rm_terms_lmer(m1_final, "cond"))
-# get_lmer_r2(rm_terms_lmer(m1_final, c("int_sens", "int_sens:block")))
-# 
-# eff_size_f2(m1_final, "cond")
 
 
 
@@ -331,7 +321,7 @@ m1_final <-
 summary(m1_final)
 
 
-# term significance
+# term significance -- Type III Wald chi-square tests
 car::Anova(m1_final, type = "III")
 
 # prettier printing of regression model
@@ -341,6 +331,10 @@ m1_final %>%
     pvalue_fun = function(x) sprintf("%1.8f", x)
   ) %>%
   add_global_p(keep = TRUE)
+
+
+
+
 
 # ---- affval_mod_diagnostics ----
 
@@ -365,6 +359,42 @@ qqmath(m1_final, id=0.05)
 
 
 
+# ---- affval_effect_sizes ----
+
+
+# testing and extracting model elements for f^2 calc
+terms(formula(m1_final, fixed.only = TRUE))
+summary(m1_final)
+summary(rm_terms_lmer(m1_final, "cond"))
+summary(rm_terms_lmer(m1_final, c("int_sens", "int_sens:block")))
+
+# test functions
+get_lmer_r2(m1_final)
+get_lmer_r2(rm_terms_lmer(m1_final, "cond"))
+# need to consider higher level terms with main effects
+get_lmer_r2(rm_terms_lmer(m1_final, c("int_sens", "int_sens:block")))
+
+# cond eff size
+eff_size_f2(m1_final, "cond")
+
+(get_lmer_r2(m1_final) - 
+    get_lmer_r2(rm_terms_lmer(m1_final, c("cond")))) /
+  (1 - get_lmer_r2(m1_final)) # manual check
+
+# int_sens eff size
+eff_size_f2(m1_final, c("int_sens", "int_sens:block"))
+
+(get_lmer_r2(m1_final) - 
+    get_lmer_r2(rm_terms_lmer(m1_final, c("int_sens", "int_sens:block")))) /
+  (1 - get_lmer_r2(m1_final))  # manual check
+
+# interaction only eff size
+eff_size_f2(m1_final, "int_sens:block")
+
+(get_lmer_r2(m1_final) - 
+    get_lmer_r2(rm_terms_lmer(m1_final, "int_sens:block"))) /
+  (1 - get_lmer_r2(m1_final))  # manual check
+
 # ---- affval_mod_preds ----
 
 # ?predict.merMod
@@ -388,7 +418,8 @@ qqmath(m1_final, id=0.05)
       m1_final,
       newdata = pred_dat,
       re.form = ~0
-    ))
+    )
+)
 
 # see:
 # https://cran.r-project.org/web/packages/merTools/vignettes/Using_predictInterval.html
@@ -548,6 +579,32 @@ qqmath(m2_final, id=0.05)
 
 
 
+
+# ---- perexe_effect_sizes ----
+
+
+# testing and extracting model elements for f^2 calc
+terms(formula(m2_final, fixed.only = TRUE))
+summary(m2_final)
+summary(rm_terms_lmer(m2_final, c("int_sens", "int_sens:block")))
+
+
+# interaction int_sens:block only eff size
+eff_size_f2(m2_final, "int_sens:cond")
+
+(get_lmer_r2(m2_final) - 
+    get_lmer_r2(rm_terms_lmer(m2_final, "int_sens:cond"))) /
+  (1 - get_lmer_r2(m2_final))  # manual check
+
+# interaction int_sens:block only eff size
+eff_size_f2(m2_final, "int_sens:block")
+
+(get_lmer_r2(m2_final) - 
+    get_lmer_r2(rm_terms_lmer(m2_final, "int_sens:block"))) /
+  (1 - get_lmer_r2(m2_final))  # manual check
+
+
+
 # ---- perexe_mod_preds ----
 
 
@@ -560,7 +617,8 @@ qqmath(m2_final, id=0.05)
       m2_final,
       newdata = pred_dat,
       re.form = ~0
-    ))
+    )
+)
 
 
 pred_ci_est <-
