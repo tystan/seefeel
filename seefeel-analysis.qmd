@@ -1,5 +1,6 @@
 ---
-title: "Statistical modelling of affective valence (`affval`) and perceived exertion (`perexe`) outcomes"
+title: "Supplementary material"
+subtitle: "Analysis of affective valence (`affval`) and perceived exertion (`perexe`) outcomes"
 date: "`r format(Sys.time(), '%d %b %Y')`"
 format: 
   pdf:
