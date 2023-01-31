@@ -1,0 +1,51 @@
+---
+title: "Statistical modelling of affective valence (`affval`) and perceived exertion (`perexe`) outcomes"
+date: "`r format(Sys.time(), '%d %b %Y')`"
+format: 
+  pdf:
+    toc: true
+    highlight-style: atom-one
+editor: source
+---
+
+```{R}
+#| include: false
+
+knitr::read_chunk('seefeel-analysis.R')
+```
+
+
+\newpage
+
+# Set up
+
+## Packages
+
+```{R, libs}
+#| echo: true
+```
+
+\newpage
+
+## Constants
+
+```{R, consts}
+#| echo: true
+```
+
+## Functions
+
+The below functions make the calculation of Cohen's $f^2$ effect size statistic on `lme4::lmer()` (`merMod` class objects) possible. These functions are used later after models are fitted.
+
+```{R, funcs1}
+#| echo: true
+```
+
+Convenience function for tidy printing of data.
+
+```{R, funcs2}
+#| echo: true
+```
+
+
+

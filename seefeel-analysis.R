@@ -1,26 +1,28 @@
 
 # ---- libs -----
 
+suppressPackageStartupMessages(suppressWarnings({
+  
+  library("readr")     # read data funcs
+  library("dplyr")     # data manipulation
+  library("tibble")    # improved data frames
+  library("ggplot2")   # plotting
+  library("purrr")     # apply functions over lists/vectors
+  library("forcats")   # handling categorical variables
+  library("tidyr")     # manipulate data to long/short representations
+  
+  library("mice")      # missing value utilities
+  library("car")       # regression utilities
+  
+  library("lme4")      # linear mixed effects modelling
+  library("merTools")  # alows prediction intervals using merMod objects
+  library("lmerTest")  # step-wise lmer model selection
+  
+  library("knitr")     # pretty printing of tables: kable()
+  library("gtsummary") # print summary tables of regression mods
+  library("lattice")   # diagnostic plots
 
-library("readr")     # read data funcs
-library("dplyr")     # data manipulation
-library("tibble")    # improved data frames
-library("ggplot2")   # plotting
-library("purrr")     # apply functions over lists/vectors
-library("forcats")   # handling categorical variables
-library("tidyr")     # manipulate data to long/short representations
-
-library("mice")      # missing value utilities
-library("car")       # regression utilities
-
-library("lme4")      # linear mixed effects modelling
-library("merTools")  # alows prediction intervals using merMod objects
-library("lmerTest")  # step-wise lmer model selection
-
-library("knitr")     # pretty printing of tables: kable()
-library("gtsummary") # print summary tables of regression mods
-library("lattice")   # diagnostic plots
-
+}))
 
 # ---- consts ----
 
@@ -46,23 +48,9 @@ col_lohi <-
   )
 
 
-# ---- funcs ----
-
-# function that replaces repeated values in a vector with empty strings
-# as the verbose redundancy is too busy in some cases 
-rm_rpts <- function(x) {
-  x <- as.character(x)
-  nx <- length(x)
-  rm_ii <- rep(FALSE, nx)
-  for (i in 2:nx) {
-    if (x[i - 1] == x[i]) 
-      rm_ii[i] <- TRUE
-  }
-  x[rm_ii] <- ""
-  return(x)
-}
 
 
+# ---- funcs1 ----
 
 # effect size (f^2), R^2 and residual variance functions
 
@@ -114,6 +102,22 @@ eff_size_f2 <- function(lmer_obj, terms) {
   
 }
 
+
+# ---- funcs2 ----
+
+# function that replaces repeated values in a vector with empty strings
+# as the verbose redundancy is too busy in some cases 
+rm_rpts <- function(x) {
+  x <- as.character(x)
+  nx <- length(x)
+  rm_ii <- rep(FALSE, nx)
+  for (i in 2:nx) {
+    if (x[i - 1] == x[i]) 
+      rm_ii[i] <- TRUE
+  }
+  x[rm_ii] <- ""
+  return(x)
+}
 
 
 # ---- read -----
