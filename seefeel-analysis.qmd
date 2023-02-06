@@ -48,5 +48,110 @@ Convenience function for tidy printing of data.
 #| echo: true
 ```
 
+\newpage
+
+# Data
+
+## Import
+
+```{R, read}
+#| include: false
+```
+
+```{R, read}
+#| eval: false
+```
 
 
+
+## Wrangling
+
+```{R, wrangle}
+#| echo: true
+```
+
+
+## Model predictions dataset
+
+This step creates a dataset for predictions from the models used later on.
+
+```{R, predictors_dataset}
+#| echo: true
+```
+
+
+\newpage
+
+# Modelling
+
+## Outcome: `affval`
+
+### Stepwise selection and final model
+
+
+```{R, affval_mod_stepwise_sel}
+#| echo: true
+
+```
+
+
+### Effect size calculations
+
+```{R, affval_effect_sizes}
+#| echo: true
+
+```
+
+### Model predicted `affval`
+
+```{R, affval_mod_preds}
+#| echo: true
+#| fig-width: 10
+#| fig-height: 6
+
+```
+
+
+
+
+
+\newpage
+
+
+## Outcome: `perexe`
+
+### Stepwise selection and final model
+
+
+```{R, perexe_mod_stepwise_sel}
+#| echo: true
+
+```
+
+
+### Effect size calculations
+
+```{R, perexe_effect_sizes}
+#| echo: true
+
+```
+
+### Model predicted `perexe`
+
+```{R, perexe_mod_preds}
+#| echo: true
+#| fig-width: 10
+#| fig-height: 6
+
+```
+
+
+\newpage
+
+
+# R session information
+
+```{R, sess_info}
+#| echo: true
+
+```

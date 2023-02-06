@@ -156,7 +156,7 @@ hill_dat <-
   ) 
 
 # NAs only present in outcome vars
-md.pattern(hill_dat, rotate.names = TRUE)
+# md.pattern(hill_dat, rotate.names = TRUE)
 
 ### centring the int_sens variable for easier interpretation of model intercept terms
 # NOTE: want average of average participant values
@@ -166,8 +166,8 @@ isc <-
   summarise(avg_int_sens = mean(int_sens))
 
 # This is the mean ISC over participants
-(mean_isc <- isc %>% pull(avg_int_sens) %>% mean(.))
-(sd_isc <- isc %>% pull(avg_int_sens) %>% sd(.))
+mean_isc <- isc %>% pull(avg_int_sens) %>% mean(.)
+sd_isc <- isc %>% pull(avg_int_sens) %>% sd(.)
 
 # now modify the ISC values in the data
 hill_dat <-
@@ -297,7 +297,7 @@ m1 <-
     data = hill_dat_affmod, 
     REML = FALSE
   )
-summary(m1)
+# summary(m1)
 
 # elimination of non-significant effects
 # partly thanks to code found at:: 
@@ -334,7 +334,8 @@ m1_final %>%
     estimate_fun = function(x) sprintf("%2.2f", x),
     pvalue_fun = function(x) sprintf("%1.8f", x)
   ) %>%
-  add_global_p(keep = TRUE)
+  add_global_p(keep = TRUE) %>%
+  as_gt(.)
 
 
 
@@ -366,17 +367,17 @@ qqmath(m1_final, id=0.05)
 # ---- affval_effect_sizes ----
 
 
-# testing and extracting model elements for f^2 calc
-terms(formula(m1_final, fixed.only = TRUE))
-summary(m1_final)
-summary(rm_terms_lmer(m1_final, "cond"))
-summary(rm_terms_lmer(m1_final, c("int_sens", "int_sens:block")))
+### testing and extracting model elements for f^2 calc
+# terms(formula(m1_final, fixed.only = TRUE))
+# summary(m1_final)
+# summary(rm_terms_lmer(m1_final, "cond"))
+# summary(rm_terms_lmer(m1_final, c("int_sens", "int_sens:block")))
 
-# test functions
-get_lmer_r2(m1_final)
-get_lmer_r2(rm_terms_lmer(m1_final, "cond"))
-# need to consider higher level terms with main effects
-get_lmer_r2(rm_terms_lmer(m1_final, c("int_sens", "int_sens:block")))
+### test functions
+# get_lmer_r2(m1_final)
+# get_lmer_r2(rm_terms_lmer(m1_final, "cond"))
+### need to consider higher level terms with main effects
+# get_lmer_r2(rm_terms_lmer(m1_final, c("int_sens", "int_sens:block")))
 
 # cond eff size
 eff_size_f2(m1_final, "cond")
@@ -399,6 +400,7 @@ eff_size_f2(m1_final, "int_sens:block")
     get_lmer_r2(rm_terms_lmer(m1_final, "int_sens:block"))) /
   (1 - get_lmer_r2(m1_final))  # manual check
 
+
 # ---- affval_mod_preds ----
 
 # ?predict.merMod
@@ -417,13 +419,13 @@ eff_size_f2(m1_final, "int_sens:block")
 # test the above centring claim
 # hist(hill_dat$int_sens_cont)
 
-(pred_est <-
-    predict(
-      m1_final,
-      newdata = pred_dat,
-      re.form = ~0
-    )
-)
+pred_est <-
+  predict(
+    m1_final,
+    newdata = pred_dat,
+    re.form = ~0
+  )
+
 
 # see:
 # https://cran.r-project.org/web/packages/merTools/vignettes/Using_predictInterval.html
@@ -449,13 +451,13 @@ pred_dat_aff <-
   bind_cols(pred_dat, tibble(fit_analytic = pred_est), pred_ci_est) %>%
   as_tibble() 
 
-cat("#### Min and max difference between analytic fit and bootstrp median is:\n")
-with(pred_dat_aff, min(fit_analytic - fit))
-with(pred_dat_aff, max(fit_analytic - fit))
+# cat("#### Min and max difference between analytic fit and bootstrp median is:\n")
+# with(pred_dat_aff, min(fit_analytic - fit))
+# with(pred_dat_aff, max(fit_analytic - fit))
 
-pred_dat_aff %>% 
-  dplyr::select(cond, block, int_sens, fit, lwr, upr) %>%
-  kable(., digits = 2)
+# pred_dat_aff %>% 
+#   dplyr::select(cond, block, int_sens, fit, lwr, upr) %>%
+#   kable(., digits = 2)
 
 pred_dat_aff <-
   pred_dat_aff %>%
@@ -500,10 +502,12 @@ pred_dat_aff %>%
   labs(
     y = "Predicted Affective Valence",
     x = "Condition",
-    col = "Interoceptive Accuracy Value",
-    fill = "Interoceptive Accuracy Value"
+    col = "Interoceptive\nAccuracy Value",
+    fill = "Interoceptive\nAccuracy Value"
   )
 
+
+# ---- affval_pred_plot_save ----
 
 ggsave(
   filename = "fig/figure-3.png", 
@@ -528,7 +532,7 @@ m2 <-
     data = hill_dat_permod, 
     REML = FALSE
   )
-summary(m2)
+# summary(m2)
 
 # elimination of non-significant effects
 s2 <- step(m2) 
@@ -558,7 +562,9 @@ m2_final %>%
     estimate_fun = function(x) sprintf("%2.2f", x),
     pvalue_fun = function(x) sprintf("%1.8f", x)
   ) %>%
-  add_global_p(keep = TRUE)
+  add_global_p(keep = TRUE) %>%
+  as_gt(.)
+
 
 
 
@@ -587,10 +593,10 @@ qqmath(m2_final, id=0.05)
 # ---- perexe_effect_sizes ----
 
 
-# testing and extracting model elements for f^2 calc
-terms(formula(m2_final, fixed.only = TRUE))
-summary(m2_final)
-summary(rm_terms_lmer(m2_final, c("int_sens", "int_sens:block")))
+### testing and extracting model elements for f^2 calc
+# terms(formula(m2_final, fixed.only = TRUE))
+# summary(m2_final)
+# summary(rm_terms_lmer(m2_final, c("int_sens", "int_sens:block")))
 
 
 # interaction int_sens:block only eff size
@@ -616,13 +622,13 @@ eff_size_f2(m2_final, "int_sens:block")
 # test the above centring claim
 # hist(hill_dat$int_sens_cont)
 
-(pred_est <-
-    predict(
-      m2_final,
-      newdata = pred_dat,
-      re.form = ~0
-    )
-)
+pred_est <-
+  predict(
+    m2_final,
+    newdata = pred_dat,
+    re.form = ~0
+  )
+
 
 
 pred_ci_est <-
@@ -645,13 +651,13 @@ pred_dat_per <-
   bind_cols(pred_dat, tibble(fit_analytic = pred_est), pred_ci_est) %>%
   as_tibble() 
 
-cat("#### Min and max difference between analytic fit and bootstrp median is:\n")
-with(pred_dat_per, min(fit_analytic - fit))
-with(pred_dat_per, max(fit_analytic - fit))
+# cat("#### Min and max difference between analytic fit and bootstrp median is:\n")
+# with(pred_dat_per, min(fit_analytic - fit))
+# with(pred_dat_per, max(fit_analytic - fit))
 
-pred_dat_per %>% 
-  dplyr::select(cond, block, int_sens, fit, lwr, upr) %>%
-  kable(., digits = 2)
+# pred_dat_per %>% 
+#   dplyr::select(cond, block, int_sens, fit, lwr, upr) %>%
+#   kable(., digits = 2)
 
 pred_dat_per <-
   pred_dat_per %>%
@@ -686,10 +692,12 @@ pred_dat_per %>%
   labs(
     y = "Predicted Ratings of Perceived Exertion",
     x = "Condition",
-    col = "Interoceptive Accuracy Value",
-    fill = "Interoceptive Accuracy Value"
+    col = "Interoceptive\nAccuracy Value",
+    fill = "Interoceptive\nAccuracy Value"
   )
 
+
+# ---- perexe_pred_plot_save ----
 
 ggsave(
   filename = "fig/figure-4.png", 
